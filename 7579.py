@@ -19,24 +19,24 @@ class Item(NamedTuple):
 
 def knapsack_largeweight(l: List[Item], capacity:int) -> int:
     """l = (weight, value), Sum(weight) >= capacity, minimize total value."""
-    # dp represents the minimum weight to get a value of at least v
+    # dp represents the maximum weight to get a value of v at most
     value_sum = sum(x.value for x in l)
     dp = [[-1] * (value_sum + 1) for _ in range(len(l))]
         
     def calc(idx: int, value: int) -> int:
-        if value <= 0:
-            return 0
         if idx == len(l):
-            return sys.maxsize
+            return 0
         if dp[idx][value] >= 0:
             return dp[idx][value]
-        w = min(calc(idx + 1, value - l[idx].value) + l[idx].weight,
-                calc(idx + 1, value))
+        if value >= l[idx].value:
+            w = max(calc(idx + 1, value - l[idx].value) + l[idx].weight,
+                    calc(idx + 1, value))
+        else:
+            w = calc(idx + 1, value)
         dp[idx][value] = w
         return w
     for v in range(value_sum +1):
-        val = calc(0, v)
-        if val != sys.maxsize and val >= capacity:
+        if calc(0, v) >= capacity:
             return v
     raise Exception('Oops')
 
@@ -45,13 +45,25 @@ def main() -> None:
     memory = list(mi())
     cost = list(mi())
     l = [Item(*x) for x in zip(memory, cost)]
-    zero_value_sum = sum(x.weight for x in l if x.value == 0)
-    ll = [x for x in l if x.value != 0]
-    print(knapsack_largeweight(ll, k - zero_value_sum))
+    print(knapsack_largeweight(l, k))
 
 def test_knapsack() -> None:
     assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(20, 1), (10, 1)])), 20) == 1
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(10, 1), (20, 1)])), 20) == 1
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(1, 1), (2, 1)])), 2) == 1
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
                                          [(10, 1), (5, 2)])), 0) == 0
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(10, 1), (20, 1)])), 10) == 1
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(20, 1), (10, 1)])), 10) == 1
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(10, 1), (20, 1)])), 30) == 2
+    assert knapsack_largeweight(list(map(lambda x: Item(*x),
+                                         [(20, 1), (10, 1)])), 30) == 2
     assert knapsack_largeweight(list(map(lambda x: Item(*x),
                                          [(1, 1)])), 0) == 0
 
