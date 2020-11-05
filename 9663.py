@@ -10,34 +10,35 @@ def mi():
 
 def solve(n: int) -> int:
     def pboard() -> None:
-        trans = list(zip(*board))
         for i in range(n):
-            print(*list(map(lambda x: 'Q' if x else '.', trans[i])))
+            if board[i] == -1:
+                print('.'*n)
+            print('.' * board[i] + 'Q' + '.' * (n - board[i] - 1))
         print()
-    def valid(i: int, j: int) -> bool:
-        if any(board[k][j] for k in range(0, i)):
-            return False
-        for k in range(0, i):
-            d = i-k
-            if (j-d >= 0 and board[k][j-d] or
-                j+d < n and board[k][j+d]):
-                return False
+    def valid(row: int, col: int) -> bool:
         return True
     def _solve(i: int) -> int:
-        if i >= n:
-            #pboard()
-            return 1
-        def step(x, y):
-            board[x][y] = True
-            r = _solve(x + 1)
-            board[x][y] = False
-            return r
-        return sum(step(i, j) for j in range(n) if valid(i, j))
-    board = [[False] * n for _ in range(n)]
+        s = 0
+        q = []
+        for j in range(n):
+            for r in range(0, i):
+                if abs(board[r] - j) in (0, i - r):
+                    break
+            else:
+                q.append(j)
+        for j in q:
+            board[i] = j
+            if i + 1 == n:
+                #pboard()
+                s += 1
+            else:
+                s += _solve(i + 1)
+        return s
+    board = [ -1 * n for _ in range(n)]
     return _solve(0)
 
 def main() -> None:
-    n, = mi()
+    n = 11 #, = mi()
     print(solve(n))
 
 def test_solve() -> None:
