@@ -27,7 +27,7 @@ def main() -> None:
             else:
                 def delheap(heap, dels, otherdels, sign):
                     item = sign * heapq.heappop(heap)
-                    while mindels[item]:
+                    while dels[item]:
                         dels[item] -= 1
                         item = sign * heapq.heappop(heap)
                     otherdels[item] += 1
