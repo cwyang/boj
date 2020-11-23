@@ -1,28 +1,39 @@
-# https://www.acmicpc.net/problem/11653
-# 2020-11-20 Chul-Woong Yang
+# https://www.acmicpc.net/problem/15988
+# 2020-11-11 Chul-Woong Yang
 import sys
+from typing import Tuple, List, NamedTuple
+
+def mi():
+    return map(int, sys.stdin.readline().split())
+
 def solve(n):
-    s = 0
-    for i in range(2, n+1):
-        if i < 5:
-            continue
-        while i % 5 == 0:
-            s += 1
-            i //= 5
-        print(s)
-    return s
-def main():    
-    n=int(input())
-    print(solve(n))
+    a,b,c = 1,0,0
+    for i in range(n):
+        a,b,c = a+b+c,a,b
+    return a
+    
+def main() -> None:
+    n, = mi()
+    board = []
+    for _ in range(n):
+        print(solve(int(input())))
+
+def test_solve() -> None:
+    pass
 
 if __name__ == '__main__':
     main()
 INPUT = '''
-6
+3
+4
+7
+10
 '''
 
 OUTPUT = '''
-2
+7
+44
+274
 '''
 
 # pytest
@@ -38,3 +49,4 @@ def test_main(capsys) -> None:          # noqa: E302
     assert out == OUTPUT.lstrip()
 def eprint(*args, **kwargs):            # noqa: E302
     print(*args, file=sys.stderr, **kwargs)
+
